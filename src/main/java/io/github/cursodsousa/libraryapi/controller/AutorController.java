@@ -61,4 +61,16 @@ public class AutorController {
         autorService.deletar(autor.get());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    @GetMapping
+    public ResponseEntity<?> pesquisar(@RequestParam(value = "nome", required = false) String nome,
+                                       @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
+
+        var autores = autorService.pesquisa(nome, nacionalidade)
+                .stream()
+                .map(AutorRespostaDTO::paraDTO)
+                .toList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(autores);
+    }
 }
