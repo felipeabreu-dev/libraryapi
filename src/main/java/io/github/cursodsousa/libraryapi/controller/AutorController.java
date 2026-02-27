@@ -3,6 +3,7 @@ package io.github.cursodsousa.libraryapi.controller;
 import io.github.cursodsousa.libraryapi.controller.dto.AutorDTO;
 import io.github.cursodsousa.libraryapi.controller.dto.AutorRespostaDTO;
 import io.github.cursodsousa.libraryapi.service.AutorService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class AutorController {
     }
 
     @PostMapping
-    public ResponseEntity<?> salvarAutor(@RequestBody AutorDTO autor) {
+    public ResponseEntity<?> salvarAutor(@RequestBody @Valid AutorDTO autor) {
         var autorEntidade = autor.mapearParaAutor();
         autorService.salvar(autorEntidade);
 
