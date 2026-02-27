@@ -2,7 +2,6 @@ package io.github.cursodsousa.libraryapi.controller;
 
 import io.github.cursodsousa.libraryapi.controller.dto.AutorDTO;
 import io.github.cursodsousa.libraryapi.controller.dto.AutorRespostaDTO;
-import io.github.cursodsousa.libraryapi.model.Autor;
 import io.github.cursodsousa.libraryapi.service.AutorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,5 +47,18 @@ public class AutorController {
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> deletar(@PathVariable String id) {
+        var idAutor = UUID.fromString(id);
+        var autor = autorService.obterPorId(idAutor);
+
+        if(autor.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        autorService.deletar(autor.get());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
