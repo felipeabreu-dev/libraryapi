@@ -2,9 +2,7 @@ package io.github.cursodsousa.libraryapi.controller;
 
 import io.github.cursodsousa.libraryapi.controller.common.GenericController;
 import io.github.cursodsousa.libraryapi.controller.dto.CadastroLivroDTO;
-import io.github.cursodsousa.libraryapi.controller.dto.ErroRespostaDTO;
 import io.github.cursodsousa.libraryapi.controller.mappers.LivroMapper;
-import io.github.cursodsousa.libraryapi.exception.RegistroDuplicadoException;
 import io.github.cursodsousa.libraryapi.model.Livro;
 import io.github.cursodsousa.libraryapi.service.LivroService;
 import jakarta.validation.Valid;
@@ -29,16 +27,11 @@ public class LivroController implements GenericController {
 
     @PostMapping
     public ResponseEntity<?> salvar(@RequestBody @Valid CadastroLivroDTO dto) {
-        try {
-            Livro livro = livroMapper.paraEntidade(dto);
-            livroService.salvar(livro);
+        Livro livro = livroMapper.paraEntidade(dto);
+        livroService.salvar(livro);
 
-            var location = gerarHeaderLocation(livro.getId());
+        var location = gerarHeaderLocation(livro.getId());
 
-            return ResponseEntity.status(HttpStatus.CREATED).location(location).build();
-        } catch (RegistroDuplicadoException e) {
-            var erroDTO = ErroRespostaDTO.conflito(e.getMessage());
-            return ResponseEntity.status(erroDTO.status()).body(erroDTO);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).location(location).build();
     }
 }

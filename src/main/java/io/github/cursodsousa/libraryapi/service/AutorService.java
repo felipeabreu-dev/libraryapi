@@ -1,7 +1,9 @@
 package io.github.cursodsousa.libraryapi.service;
 
+import io.github.cursodsousa.libraryapi.exception.OperacaoNaoPermitidaException;
 import io.github.cursodsousa.libraryapi.model.Autor;
 import io.github.cursodsousa.libraryapi.repository.AutorRepository;
+import io.github.cursodsousa.libraryapi.repository.LivroRepository;
 import io.github.cursodsousa.libraryapi.validator.AutorValidator;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -15,10 +17,12 @@ import java.util.UUID;
 public class AutorService {
 
     private final AutorRepository autorRepository;
+    private final LivroRepository livroRepository;
     private final AutorValidator validator;
 
-    public AutorService(AutorRepository autorRepository, AutorValidator validator) {
+    public AutorService(AutorRepository autorRepository, LivroRepository livroRepository, AutorValidator validator) {
         this.autorRepository = autorRepository;
+        this.livroRepository = livroRepository;
         this.validator = validator;
     }
 
@@ -28,7 +32,7 @@ public class AutorService {
     }
 
     public void atualizar(Autor autor) {
-        if(autor.getId() == null) {
+        if (autor.getId() == null) {
             throw new IllegalArgumentException("Para atualizar é necessário que o autor já esteja salvo na base de dados");
         }
 
@@ -41,19 +45,23 @@ public class AutorService {
     }
 
     public void deletar(Autor autor) {
+        if (possuiLivro(autor)) {
+            throw new OperacaoNaoPermitidaException(
+                    "Não é permitido excluir um autor que possui livros cadastrados!");
+        }
         autorRepository.delete(autor);
     }
 
     public List<Autor> pesquisa(String nome, String nacionalidade) {
-        if(nome != null && nacionalidade != null) {
+        if (nome != null && nacionalidade != null) {
             return autorRepository.findByNomeAndNacionalidade(nome, nacionalidade);
         }
 
-        if(nome != null) {
+        if (nome != null) {
             return autorRepository.findByNome(nome);
         }
 
-        if(nacionalidade != null) {
+        if (nacionalidade != null) {
             return autorRepository.findByNacionalidade(nacionalidade);
         }
 
@@ -73,5 +81,9 @@ public class AutorService {
         Example<Autor> autorExample = Example.of(autor, exampleMatcher);
 
         return autorRepository.findAll(autorExample);
+    }
+
+    boolean possuiLivro(Autor autor) {
+        return livroRepository.existsByAutor(autor);
     }
 }
