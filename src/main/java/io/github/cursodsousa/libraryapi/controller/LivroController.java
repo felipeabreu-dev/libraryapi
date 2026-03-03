@@ -8,10 +8,9 @@ import io.github.cursodsousa.libraryapi.service.LivroService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/livros")
@@ -33,5 +32,15 @@ public class LivroController implements GenericController {
         var location = gerarHeaderLocation(livro.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).location(location).build();
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<?> obterDetalhes(@PathVariable String id) {
+        return livroService.obterPorId(UUID.fromString(id))
+                .map(livro -> {
+                    var dto = livroMapper.paraDTO(livro);
+                    return ResponseEntity.status(HttpStatus.OK).body(dto);
+                }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+
     }
 }
