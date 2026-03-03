@@ -1,5 +1,6 @@
 package io.github.cursodsousa.libraryapi.controller;
 
+import io.github.cursodsousa.libraryapi.controller.common.GenericController;
 import io.github.cursodsousa.libraryapi.controller.dto.AutorDTO;
 import io.github.cursodsousa.libraryapi.controller.dto.AutorRespostaDTO;
 import io.github.cursodsousa.libraryapi.controller.mappers.AutorMapper;
@@ -15,7 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/autores")
-public class AutorController {
+public class AutorController implements GenericController {
 
     private final AutorService autorService;
     private final AutorMapper autorMapper;
@@ -30,13 +31,9 @@ public class AutorController {
         var autorEntidade = autorMapper.dtoParaEntidade(autor);
         autorService.salvar(autorEntidade);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(autorEntidade.getId())
-                .toUri();
+        var location = gerarHeaderLocation(autorEntidade.getId());
 
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.status(HttpStatus.CREATED).location(location).build();
     }
 
     @GetMapping("{id}")

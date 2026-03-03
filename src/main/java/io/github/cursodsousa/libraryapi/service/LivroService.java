@@ -1,5 +1,6 @@
 package io.github.cursodsousa.libraryapi.service;
 
+import io.github.cursodsousa.libraryapi.model.Livro;
 import io.github.cursodsousa.libraryapi.repository.LivroRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,4 +14,7 @@ public class LivroService {
     }
 
 
+    public Livro salvar(Livro livro) {
+        return livroRepository.save(livro);
+    }
 }
