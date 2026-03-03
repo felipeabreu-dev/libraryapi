@@ -2,6 +2,7 @@ package io.github.cursodsousa.libraryapi.controller;
 
 import io.github.cursodsousa.libraryapi.controller.dto.AutorDTO;
 import io.github.cursodsousa.libraryapi.controller.dto.AutorRespostaDTO;
+import io.github.cursodsousa.libraryapi.controller.mappers.AutorMapper;
 import io.github.cursodsousa.libraryapi.service.AutorService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,14 +18,16 @@ import java.util.UUID;
 public class AutorController {
 
     private final AutorService autorService;
+    private final AutorMapper autorMapper;
 
-    public AutorController(AutorService autorService) {
+    public AutorController(AutorService autorService, AutorMapper autorMapper) {
         this.autorService = autorService;
+        this.autorMapper = autorMapper;
     }
 
     @PostMapping
     public ResponseEntity<?> salvarAutor(@RequestBody @Valid AutorDTO autor) {
-        var autorEntidade = autor.mapearParaAutor();
+        var autorEntidade = autorMapper.dtoParaEntidade(autor);
         autorService.salvar(autorEntidade);
 
         URI location = ServletUriComponentsBuilder
@@ -42,7 +45,7 @@ public class AutorController {
         var autor = autorService.obterPorId(idAutor);
 
         if(autor.isPresent()) {
-            var dto = AutorRespostaDTO.paraDTO(autor.get());
+            var dto = autorMapper.entidadeParaDTO(autor.get());
 
             return ResponseEntity.status(HttpStatus.OK).body(dto);
         }
@@ -69,7 +72,7 @@ public class AutorController {
 
         var autores = autorService.pesquisaByExample(nome, nacionalidade)
                 .stream()
-                .map(AutorRespostaDTO::paraDTO)
+                .map(autorMapper::entidadeParaDTO)
                 .toList();
 
         return ResponseEntity.status(HttpStatus.OK).body(autores);

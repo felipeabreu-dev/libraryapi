@@ -1,0 +1,34 @@
+package io.github.cursodsousa.libraryapi.controller;
+
+import io.github.cursodsousa.libraryapi.controller.dto.CadastroLivroDTO;
+import io.github.cursodsousa.libraryapi.controller.dto.ErroRespostaDTO;
+import io.github.cursodsousa.libraryapi.exception.RegistroDuplicadoException;
+import io.github.cursodsousa.libraryapi.service.LivroService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/livros")
+public class LivroController {
+
+    private final LivroService livroService;
+
+    public LivroController(LivroService livroService) {
+        this.livroService = livroService;
+    }
+
+    @PostMapping
+    public ResponseEntity<?> salvar(@RequestBody @Valid CadastroLivroDTO dto) {
+        try {
+
+            return ResponseEntity.ok(dto);
+        } catch (RegistroDuplicadoException e) {
+            var erroDTO = ErroRespostaDTO.conflito(e.getMessage());
+            return ResponseEntity.status(erroDTO.status()).body(erroDTO);
+        }
+    }
+}

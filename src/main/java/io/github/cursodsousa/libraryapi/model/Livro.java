@@ -27,7 +27,7 @@ public class Livro {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "isbn", length = 20, nullable = false)
+    @Column(name = "isbn", length = 20, nullable = false, unique = true)
     private String isbn;
 
     @Column(name = "titulo", length = 150, nullable = false)
