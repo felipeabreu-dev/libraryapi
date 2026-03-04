@@ -2,6 +2,7 @@ package io.github.cursodsousa.libraryapi.controller.common;
 
 import io.github.cursodsousa.libraryapi.controller.dto.ErroCampoDTO;
 import io.github.cursodsousa.libraryapi.controller.dto.ErroRespostaDTO;
+import io.github.cursodsousa.libraryapi.exception.CampoInvalidoException;
 import io.github.cursodsousa.libraryapi.exception.OperacaoNaoPermitidaException;
 import io.github.cursodsousa.libraryapi.exception.RegistroDuplicadoException;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,15 @@ public class GoblalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErroRespostaDTO handleOperacaoNaoPermitidaException(OperacaoNaoPermitidaException e) {
         return ErroRespostaDTO.respostaPadrao(e.getMessage());
+    }
+
+    @ExceptionHandler(CampoInvalidoException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErroRespostaDTO handleCampoInvalidoException(CampoInvalidoException e) {
+        return new ErroRespostaDTO(
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                "Erro validação",
+                List.of(new ErroCampoDTO(e.getCampo(), e.getMessage())));
     }
 
     @ExceptionHandler(RuntimeException.class)

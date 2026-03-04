@@ -3,13 +3,13 @@ package io.github.cursodsousa.libraryapi.service;
 import io.github.cursodsousa.libraryapi.model.Livro;
 import io.github.cursodsousa.libraryapi.model.enums.GeneroLivro;
 import io.github.cursodsousa.libraryapi.repository.LivroRepository;
+import io.github.cursodsousa.libraryapi.validator.LivroValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,12 +19,15 @@ import static io.github.cursodsousa.libraryapi.repository.specs.LivroSpecs.*;
 public class LivroService {
 
     private final LivroRepository livroRepository;
+    private final LivroValidator validator;
 
-    public LivroService(LivroRepository livroRepository) {
+    public LivroService(LivroRepository livroRepository, LivroValidator validator) {
         this.livroRepository = livroRepository;
+        this.validator = validator;
     }
 
     public Livro salvar(Livro livro) {
+        validator.validar(livro);
         return livroRepository.save(livro);
     }
 
@@ -71,5 +74,14 @@ public class LivroService {
         Pageable pageRequest = PageRequest.of(pagina, tamanhoPagina);
 
         return livroRepository.findAll(specs, pageRequest);
+    }
+
+    public void atualizar(Livro livro) {
+        if(livro.getId() == null) {
+            throw new IllegalArgumentException("Para atualizar é necessário que o autor já esteja salvo na base de dados");
+        }
+
+        validator.validar(livro);
+        livroRepository.save(livro);
     }
 }
