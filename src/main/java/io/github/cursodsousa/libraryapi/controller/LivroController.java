@@ -2,8 +2,10 @@ package io.github.cursodsousa.libraryapi.controller;
 
 import io.github.cursodsousa.libraryapi.controller.common.GenericController;
 import io.github.cursodsousa.libraryapi.controller.dto.CadastroLivroDTO;
+import io.github.cursodsousa.libraryapi.controller.dto.ResultadoPesquisaLivroDTO;
 import io.github.cursodsousa.libraryapi.controller.mappers.LivroMapper;
 import io.github.cursodsousa.libraryapi.model.Livro;
+import io.github.cursodsousa.libraryapi.model.enums.GeneroLivro;
 import io.github.cursodsousa.libraryapi.service.LivroService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -34,6 +36,7 @@ public class LivroController implements GenericController {
         return ResponseEntity.status(HttpStatus.CREATED).location(location).build();
     }
 
+
     @GetMapping("{id}")
     public ResponseEntity<?> obterDetalhes(@PathVariable String id) {
         return livroService.obterPorId(UUID.fromString(id))
@@ -51,5 +54,22 @@ public class LivroController implements GenericController {
                     livroService.deletar(livro);
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
                 }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @GetMapping
+    public ResponseEntity<?> pesquisa(
+            @RequestParam(value = "isbn", required = false) String isbn,
+            @RequestParam(value = "nomeAutor",required = false) String nomeAutor,
+            @RequestParam(value = "titulo", required = false) String titulo,
+            @RequestParam(value = "genero", required = false) GeneroLivro genero,
+            @RequestParam(value = "anoPublicacao", required = false) Integer anoPublicacao,
+            @RequestParam(value = "pagina", defaultValue = "0") Integer pagina,
+            @RequestParam(value = "tamanho-pagina", defaultValue = "10") Integer tamanhoPagina
+            ) {
+        var resultado = livroService
+                .pesquisa(isbn, nomeAutor, titulo, genero, anoPublicacao, pagina, tamanhoPagina)
+                .map(livroMapper::paraDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body(resultado);
     }
 }
