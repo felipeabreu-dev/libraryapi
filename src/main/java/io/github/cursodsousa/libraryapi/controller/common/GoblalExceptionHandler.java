@@ -6,6 +6,7 @@ import io.github.cursodsousa.libraryapi.exception.CampoInvalidoException;
 import io.github.cursodsousa.libraryapi.exception.OperacaoNaoPermitidaException;
 import io.github.cursodsousa.libraryapi.exception.RegistroDuplicadoException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,6 +53,16 @@ public class GoblalExceptionHandler {
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 "Erro validação",
                 List.of(new ErroCampoDTO(e.getCampo(), e.getMessage())));
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErroRespostaDTO handleAccessDeniedException(AuthorizationDeniedException e) {
+        return new ErroRespostaDTO(
+                HttpStatus.FORBIDDEN.value(),
+                "Acesso Negado",
+                List.of()
+        );
     }
 
     @ExceptionHandler(RuntimeException.class)

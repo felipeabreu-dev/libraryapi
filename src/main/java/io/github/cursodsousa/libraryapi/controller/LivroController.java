@@ -10,6 +10,7 @@ import io.github.cursodsousa.libraryapi.service.LivroService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -27,6 +28,7 @@ public class LivroController implements GenericController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<?> salvar(@RequestBody @Valid CadastroLivroDTO dto) {
         Livro livro = livroMapper.paraEntidade(dto);
         livroService.salvar(livro);
@@ -38,6 +40,7 @@ public class LivroController implements GenericController {
 
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<?> obterDetalhes(@PathVariable String id) {
         return livroService.obterPorId(UUID.fromString(id))
                 .map(livro -> {
@@ -48,6 +51,7 @@ public class LivroController implements GenericController {
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<?> deletar(@PathVariable String id) {
         return livroService.obterPorId(UUID.fromString(id))
                 .map(livro -> {
@@ -57,6 +61,7 @@ public class LivroController implements GenericController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<?> pesquisa(
             @RequestParam(value = "isbn", required = false) String isbn,
             @RequestParam(value = "nomeAutor",required = false) String nomeAutor,
@@ -74,6 +79,7 @@ public class LivroController implements GenericController {
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<?> atualizar(@PathVariable("id") String id,
                                        @RequestBody CadastroLivroDTO dto) {
         return livroService.obterPorId(UUID.fromString(id))

@@ -8,6 +8,7 @@ import io.github.cursodsousa.libraryapi.service.AutorService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -27,6 +28,7 @@ public class AutorController implements GenericController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('GERENTE')")
     public ResponseEntity<?> salvarAutor(@RequestBody @Valid AutorDTO autor) {
         var autorEntidade = autorMapper.dtoParaEntidade(autor);
         autorService.salvar(autorEntidade);
@@ -37,6 +39,7 @@ public class AutorController implements GenericController {
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<?> obterDetalhes(@PathVariable String id) {
         var idAutor = UUID.fromString(id);
         var autor = autorService.obterPorId(idAutor);
@@ -51,6 +54,7 @@ public class AutorController implements GenericController {
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('GERENTE')")
     public ResponseEntity<?> deletar(@PathVariable String id) {
         var idAutor = UUID.fromString(id);
         var autor = autorService.obterPorId(idAutor);
@@ -64,6 +68,7 @@ public class AutorController implements GenericController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<?> pesquisar(@RequestParam(value = "nome", required = false) String nome,
                                        @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
 
@@ -76,6 +81,7 @@ public class AutorController implements GenericController {
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> atualizar(
             @PathVariable String id,
             @RequestBody AutorDTO autorDTO) {
