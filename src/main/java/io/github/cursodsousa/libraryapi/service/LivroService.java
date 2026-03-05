@@ -3,6 +3,7 @@ package io.github.cursodsousa.libraryapi.service;
 import io.github.cursodsousa.libraryapi.model.Livro;
 import io.github.cursodsousa.libraryapi.model.enums.GeneroLivro;
 import io.github.cursodsousa.libraryapi.repository.LivroRepository;
+import io.github.cursodsousa.libraryapi.security.SecurityService;
 import io.github.cursodsousa.libraryapi.validator.LivroValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,14 +21,17 @@ public class LivroService {
 
     private final LivroRepository livroRepository;
     private final LivroValidator validator;
+    private final SecurityService securityService;
 
-    public LivroService(LivroRepository livroRepository, LivroValidator validator) {
+    public LivroService(LivroRepository livroRepository, LivroValidator validator, SecurityService securityService) {
         this.livroRepository = livroRepository;
         this.validator = validator;
+        this.securityService = securityService;
     }
 
     public Livro salvar(Livro livro) {
         validator.validar(livro);
+        livro.setUsuario(securityService.obterUsuarioLogado());
         return livroRepository.save(livro);
     }
 

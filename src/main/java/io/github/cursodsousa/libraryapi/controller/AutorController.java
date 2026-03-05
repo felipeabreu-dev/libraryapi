@@ -2,7 +2,6 @@ package io.github.cursodsousa.libraryapi.controller;
 
 import io.github.cursodsousa.libraryapi.controller.common.GenericController;
 import io.github.cursodsousa.libraryapi.controller.dto.AutorDTO;
-import io.github.cursodsousa.libraryapi.controller.dto.AutorRespostaDTO;
 import io.github.cursodsousa.libraryapi.controller.mappers.AutorMapper;
 import io.github.cursodsousa.libraryapi.service.AutorService;
 import jakarta.validation.Valid;
@@ -10,9 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.UUID;
 
 @RestController
